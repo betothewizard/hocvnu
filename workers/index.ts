@@ -1,118 +1,73 @@
-import type { ExportedHandler, KVNamespace } from "@cloudflare/workers-types";
+import type { D1Database } from "@cloudflare/workers-types";
+import { desc, eq, sql } from "drizzle-orm";
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { createDb } from "./db";
+import { questionsTable, subjectsTable, submissionsTable } from "./db/schema";
+import { PAGE_SIZE } from "./constants";
 
 interface Env {
-  hoclms: KVNamespace;
+  DB: D1Database;
 }
 
-const ALLOWED_ORIGIN = "*"; // Consider restricting this to your specific origin in production
+const ALLOWED_ORIGIN = "*";
 
-export default {
-  async fetch(request: Request, env: Env, ctx): Promise<Response> {
-    // Set CORS headers for all responses
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    };
+const app = new Hono<{ Bindings: Env }>().basePath("/api");
 
-    // Handle CORS preflight requests
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+app.use(
+  "*",
+  cors({
+    origin: ALLOWED_ORIGIN,
+    allowMethods: ["GET", "POST", "OPTIONS"],
+    allowHeaders: ["Content-Type"],
+  }),
+);
+
+app.get("hi", (c) => {
+  return c.text("Hello");
+});
+
+app.get("/subject/:subjectCode/questions", async (c) => {
+  try {
+    const db = createDb(c.env.DB);
+
+    const subjectCode = c.req.param("subjectCode");
+    const subject = await db.query.subjectsTable.findFirst({
+      where: eq(subjectsTable.code, subjectCode),
+    });
+    if (!subject) {
+      return c.json({ error: "Subject not found" });
     }
 
-    const url = new URL(request.url);
-    const path = url.pathname;
-
-    if (path === "/api/questions" && request.method === "GET") {
-      const pageSize = 10;
-
-      try {
-        if (!env.hoclms) {
-          return new Response("KV Namespace not found.", {
-            status: 500,
-            headers: corsHeaders,
-          });
-        }
-
-        const allQuestions = await env.hoclms.get("questions");
-        if (!allQuestions) {
-          return new Response("Questions not found", {
-            status: 404,
-            headers: corsHeaders,
-          });
-        }
-
-        const parsedQuestions = JSON.parse(allQuestions);
-        const page = +(url.searchParams.get("page") || "0");
-        const totalPages = Math.ceil(parsedQuestions.length / pageSize);
-
-        if (page < 0 || page >= totalPages) {
-          return new Response("Page not found", {
-            status: 404,
-            headers: corsHeaders,
-          });
-        }
-
-        const start = page * pageSize;
-        const end = start + pageSize;
-        const questions = parsedQuestions.slice(start, end);
-
-        return new Response(
-          JSON.stringify({ questions, meta: { page, totalPages } }),
-          {
-            headers: {
-              ...corsHeaders,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-      } catch (e) {
-        return new Response(e.toString(), {
-          status: 500,
-          headers: corsHeaders,
-        });
-      }
+    const { data: allQuestions } = await db.query.questionsTable.findFirst({
+      where: eq(questionsTable.subjectCode, subjectCode),
+      columns: { data: true },
+    });
+    if (!allQuestions) {
+      return c.json({ error: "Questions not found" });
     }
 
-    if (path === "/api/submissions" && request.method === "POST") {
-      try {
-        const submission = await request.json();
-        if (!submission) {
-          return new Response("Missing body.", {
-            status: 400,
-            headers: corsHeaders,
-          });
-        }
+    const parsedQuestions = JSON.parse(allQuestions);
 
-        const submissions = await env.hoclms.get("submissions");
-        if (!submissions) {
-          return new Response("Submissions not found", {
-            status: 404,
-            headers: corsHeaders,
-          });
-        }
-
-        const parsedSubmissions = JSON.parse(submissions);
-        submission.forEach((element) => {
-          parsedSubmissions[element.id][element.selectedAnswerIndex]++;
-        });
-
-        await env.hoclms.put("submissions", JSON.stringify(parsedSubmissions));
-
-        return new Response(JSON.stringify({ success: true }), {
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-          },
-        });
-      } catch (e) {
-        return new Response(e.toString(), {
-          status: 500,
-          headers: corsHeaders,
-        });
-      }
+    const page = +(c.req.query("page") || "0");
+    const totalPages = Math.ceil(parsedQuestions.length / PAGE_SIZE);
+    if (page < 0 || page >= totalPages) {
+      return c.json({ error: "Invalid page" });
     }
 
-    return new Response("Not found", { status: 404, headers: corsHeaders });
-  },
-} satisfies ExportedHandler<Env>;
+    const start = page * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    const questions = parsedQuestions.slice(start, end);
+
+    return c.json({ questions, meta: { page, totalPages } });
+  } catch (e) {
+    console.error(e);
+    return c.json({ error: e }, 500);
+  }
+});
+
+app.notFound((c) => {
+  return c.json({ error: "Not found" }, 404);
+});
+
+export default app;

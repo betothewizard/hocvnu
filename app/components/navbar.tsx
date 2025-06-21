@@ -13,10 +13,10 @@ const Navbar = () => {
       <NavLink to="/">
         <img
           src={logo}
-          width={90}
-          height={90}
-          alt="hoclms"
-          className="w-[90px] pt-2"
+          width={75}
+          height={75}
+          alt="hocvnu"
+          className="w-[75px] pt-2"
         />
       </NavLink>
       <ul className="items-center justify-end flex-1 hidden gap-5 font-bold list-none sm:flex">
@@ -53,7 +53,7 @@ const Navbar = () => {
         </li>
         <li className="flex items-center">
           <a
-            href="https://github.com/betothewizard/hoclms"
+            href="https://github.com/betothewizard/hocvnu"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1"
@@ -107,7 +107,7 @@ const Navbar = () => {
             </li>
             <li className="flex items-center">
               <a
-                href="https://github.com/betothewizard/hoclms"
+                href="https://github.com/betothewizard/hocvnu"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1"

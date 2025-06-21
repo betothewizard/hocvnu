@@ -1,8 +1,6 @@
-# HocLMS (HocLuatMeSay)
+# HocVNU
 
 ## Introduction
-
-Yet another ReactJS quiz app
 
 ## Technologies
 
