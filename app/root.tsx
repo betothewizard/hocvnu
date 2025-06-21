@@ -27,7 +27,8 @@ export const links: Route.LinksFunction = () => [
 export const meta: Route.MetaFunction = () => [
   {
     name: "description",
-    content: "Ôn tập môn học Nhà nước và pháp luật đại cương",
+    content:
+      "Ôn tập môn học Nhà nước và pháp luật đại cương (ĐHQGHN) với 80+ câu hỏi trắc nghiệm được sưu tầm.",
   },
   {
     name: "author",
@@ -37,6 +38,10 @@ export const meta: Route.MetaFunction = () => [
     name: "keywords",
     content:
       "lms, nhà nước và pháp luật, đại học quốc gia, ôn tập, trắc nghiệm, dhqghn",
+  },
+  {
+    name: "google-adsense-account",
+    content: "ca-pub-2669549342761819",
   },
 ];
 

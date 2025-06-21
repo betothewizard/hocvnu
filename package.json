@@ -8,33 +8,35 @@
     "dev": "react-router",
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
+    "deploy": "react-router build && wrangler pages deploy",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@bprogress/core": "^1.1.15",
-    "@headlessui/react": "^2.2.0",
-    "@react-router/node": "^7.2.0",
-    "@tanstack/react-query": "^5.66.9",
-    "isbot": "^5",
-    "lucide-react": "^0.475.0",
-    "posthog-js": "^1.222.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router": "^7.2.0"
+    "@bprogress/core": "^1.3.4",
+    "@headlessui/react": "^2.2.4",
+    "@react-router/node": "^7.6.2",
+    "@tanstack/react-query": "^5.80.10",
+    "isbot": "^5.1.28",
+    "lucide-react": "^0.519.0",
+    "posthog-js": "^1.255.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router": "^7.6.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250214.0",
-    "@react-router/dev": "^7.2.0",
-    "@tailwindcss/vite": "^4.0.7",
-    "@tanstack/eslint-plugin-query": "^5.66.1",
-    "@types/node": "^22",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "react-router-devtools": "^1.1.5",
-    "tailwindcss": "^4.0.8",
-    "typescript": "^5.7.3",
-    "vite": "^6.1.1",
+    "@cloudflare/workers-types": "^4.20250620.0",
+    "@react-router/dev": "^7.6.2",
+    "@tailwindcss/vite": "^4.1.10",
+    "@tanstack/eslint-plugin-query": "^5.78.0",
+    "@types/node": "^22.15.32",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "react-router-devtools": "^5.0.6",
+    "tailwindcss": "^4.1.10",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
     "vite-tsconfig-paths": "^5.1.4",
-    "wrangler": "^3.109.2"
-  }
+    "wrangler": "^4.20.5"
+  },
+  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977"
 }

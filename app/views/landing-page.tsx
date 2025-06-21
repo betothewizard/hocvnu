@@ -13,7 +13,7 @@ export default function LandingPage() {
           </div>
 
           <p className="mt-5 sm:mt-0 sm:max-w-full text-xl md:text-2xl lg:text-3xl">
-            Ôn tập <b>Nhà nước và pháp luật đại cương</b> (ĐHQGHN) với{" "}
+            Ôn tập môn học <b>Nhà nước và pháp luật đại cương</b> (ĐHQGHN) với{" "}
             <b>80+</b> câu hỏi trắc nghiệm được sưu tầm.
           </p>
           <div className="mt-10 flex flex-col items-center">

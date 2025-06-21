@@ -19,7 +19,7 @@ export default function AppLayout() {
       <Outlet />
       <div className="w-full flex justify-center">
         <div className="w-3/4">
-          <script src="https://cdn.indieboosting.com/latest/script.js?id=OLWTNFE0I3&direction=horizontal&theme=light&noBorder=true"></script>
+          <script src="https://cdn.indieboosting.com/latest/script.js?id=UGKWF0KELS&direction=horizontal&theme=light&noBorder=true"></script>
         </div>
       </div>
     </div>
