@@ -1,25 +1,30 @@
-import { styles } from "../styles";
-import { useEffect, useState } from "react";
-import type { QuestionType } from "../types/question";
-import { Question } from "../components/question-ui";
-import { Button } from "@headlessui/react";
-import { CustomDialog } from "../components/custom-dialog";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import {
-  useNavigate,
-  useLoaderData,
-} from "react-router";
-import { shuffle } from "../utils/random";
+import { useEffect, useState } from "react";
+import { redirect, useLoaderData, useNavigate, useParams } from "react-router";
+import { Button } from "~/components/ui/button";
+import { CustomDialog } from "../components/custom-dialog";
+import { Question } from "../components/question-ui";
 import { getQuestions } from "../services/getQuestions";
 import { postSubmission } from "../services/postSubmission";
-import type { Route } from "./+types/practice";
+import { styles } from "../styles";
+import type { QuestionType } from "../types/question";
+import { shuffle } from "../utils/random";
+import type { Route } from "./+types/quiz";
 
 const QUESTIONS_PER_PAGE = 10;
 
-export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+export async function clientLoader({
+  request,
+  params,
+}: Route.ClientLoaderArgs) {
   const url = new URL(request.url);
+  const { subjectCode } = params;
+  // if (!subjectCode) {
+  //   return redirect("/not-found");
+  // }
+
   const currentPage = +(url.searchParams.get("page") || 0);
-  const questionData = await getQuestions(currentPage);
+  const questionData = await getQuestions(subjectCode, currentPage);
   return { currentPage, questionData };
 }
 
@@ -121,7 +126,7 @@ export default function PracticePage() {
         )}
         <div className="flex justify-center space-x-4">
           <Button
-            className={`my-8 rounded-full border-2 border-zinc-600 px-2 data-[hover]:bg-gray-200/50 ${currentPage === 0 ? "opacity-0" : ""}`}
+            className={`my-8 rounded-full border-2 border-zinc-600 px-2 hover:bg-gray-200/50 ${currentPage === 0 ? "opacity-0" : ""}`}
             onClick={() => handleNavigation(currentPage - 1)}
             disabled={currentPage === 0}
           >
@@ -134,7 +139,7 @@ export default function PracticePage() {
             Kiểm tra
           </Button>
           <Button
-            className={`my-8 rounded-full border-2 border-zinc-600 px-2 data-[hover]:bg-gray-200/50 ${currentPage === meta.totalPages - 1 ? "opacity-0" : ""}`}
+            className={`my-8 rounded-full border-2 border-zinc-600 px-2 hover:bg-gray-200/50 ${currentPage === meta.totalPages - 1 ? "opacity-0" : ""}`}
             onClick={() => handleNavigation(currentPage + 1)}
             disabled={currentPage === meta.totalPages - 1}
           >

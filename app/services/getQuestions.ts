@@ -1,8 +1,6 @@
-import { LINKS } from "../utils/config";
-
-export const getQuestions = async (page: number) => {
+export const getQuestions = async (subjectCode: string, page: number) => {
   const response = await fetch(
-    `${LINKS.questions}/api/questions?page=${page}`,
+    `${import.meta.env.VITE_WORKER_URL}/api/subject/${subjectCode}/questions?page=${page}`,
     {
       method: "GET",
     },

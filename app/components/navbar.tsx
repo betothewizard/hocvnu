@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { ExternalLink, Menu, XIcon } from "lucide-react";
-import { Button } from "@headlessui/react";
 import { NavLink } from "react-router";
-import { LINKS } from "../utils/config";
 import logo from "/logo.png";
+import { Button } from "~/components/ui/button";
 
 const Navbar = () => {
   const [toggle, setToggle] = useState(false);
@@ -41,30 +40,35 @@ const Navbar = () => {
                 viewTransitionName: isTransitioning ? "slide" : "",
               };
             }}
-            to="/practice"
+            to="/tai-lieu"
           >
-            Ôn tập
+            Tài liệu
           </NavLink>
         </li>
         <li>
-          <a href={LINKS.feedbackForm} target="_blank">
-            Đóng góp
-          </a>
-        </li>
-        <li className="flex items-center">
-          <a
-            href="https://github.com/betothewizard/hocvnu"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1"
+          <NavLink
+            style={({ isActive, isTransitioning }) => {
+              return {
+                color: isActive ? "#f7b136" : "",
+                viewTransitionName: isTransitioning ? "slide" : "",
+              };
+            }}
+            to="/trac-nghiem"
           >
-            @betothewizard <ExternalLink size={14} />
+            Trắc nghiệm
+          </NavLink>
+        </li>
+        <li>
+          <a href={import.meta.env.VITE_FEEDBACK_FORM} target="_blank">
+            Đóng góp
           </a>
         </li>
       </ul>
 
       <div className="flex items-center justify-end sm:hidden">
         <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setToggle((t) => !t)}
           className="transition-transform duration-200 ease-in-out hover:scale-110"
         >
@@ -97,11 +101,11 @@ const Navbar = () => {
                 }}
                 to="/practice"
               >
-                Ôn tập
+                Trắc nghiệm
               </NavLink>
             </li>
             <li className="w-full transition-all duration-200 ease-in-out">
-              <a href={LINKS.feedbackForm} target="_blank">
+              <a href={import.meta.env.VITE_FEEDBACK_FORM} target="_blank">
                 Đóng góp
               </a>
             </li>

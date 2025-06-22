@@ -2,13 +2,14 @@
   "name": "hocvnu",
   "author": "betothewizard",
   "private": true,
-  "version": "1.1.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "react-router",
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
-    "deploy:app": "react-router build && wrangler pages deploy --name hocvnu",
+    "scan": "react-scan",
+    "deploy:app": "react-router build && wrangler pages deploy --project-name hocvnu",
     "deploy:worker": "wrangler deploy workers/index.ts --name hocvnu-worker",
     "typecheck": "react-router typegen && tsc",
     "db:generate": "drizzle-kit generate",
@@ -16,13 +17,19 @@
     "db:migrate-local": "wrangler d1 migrations apply hocvnu-db --local",
     "db:seed": "wrangler d1 execute hocvnu-db --file=./seed.sql",
     "db:studio": "drizzle-kit studio",
-    "dev:worker": "wrangler dev workers/index.ts"
+    "dev:worker": "wrangler dev workers/index.ts",
+    "db:insight": "wrangler d1 insights hocvnu-db --sortBy reads --timePeriod 7d"
   },
   "dependencies": {
     "@bprogress/core": "^1.3.4",
-    "@headlessui/react": "^2.2.4",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-radio-group": "^1.3.7",
+    "@radix-ui/react-slot": "^1.2.3",
     "@react-router/node": "^7.6.2",
     "@tanstack/react-query": "^5.80.10",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.2",
     "hono": "^4.8.2",
     "isbot": "^5.1.28",
@@ -30,7 +37,10 @@
     "posthog-js": "^1.255.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router": "^7.6.2"
+    "react-router": "^7.6.2",
+    "react-scan": "^0.3.4",
+    "tailwind-merge": "^3.3.1",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250620.0",
@@ -44,6 +54,7 @@
     "drizzle-kit": "^0.31.1",
     "react-router-devtools": "^5.0.6",
     "tailwindcss": "^4.1.10",
+    "tw-animate-css": "^1.3.4",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vite-tsconfig-paths": "^5.1.4",

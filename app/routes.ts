@@ -8,7 +8,11 @@ import {
 export default [
   layout("views/layout.tsx", [
     index("views/landing-page.tsx"),
-    route("/practice", "views/practice.tsx"),
+    route("/trac-nghiem", "views/quizzes.tsx"),
+    route("/trac-nghiem/:subjectCode", "views/quiz.tsx"),
+    route("/tai-lieu", "views/documents.tsx"),
+    route("/tai-lieu/:documentId", "views/document.tsx"),
+    route("/dong-gop", "views/contribute.tsx"),
     route("*", "views/not-found.tsx"),
   ]),
 ] satisfies RouteConfig;

@@ -1,5 +1,13 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
-import { isRouteErrorResponse } from "react-router";
+import { useEffect } from "react";
+import {
+  isRouteErrorResponse,
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "react-router";
+import { scan } from "react-scan";
 import type { Route } from "./+types/root";
 import "./styles/app.css";
 
@@ -46,6 +54,10 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    scan({ enabled: true });
+  }, []);
+
   return (
     <html lang="en">
       <head>
