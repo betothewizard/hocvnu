@@ -27,44 +27,79 @@ app.get("hi", (c) => {
   return c.text("Hello");
 });
 
-app.get("/subject/:subjectCode/questions", async (c) => {
-  try {
-    const db = createDb(c.env.DB);
+app
+  .get("/subject/:subjectCode/questions", async (c) => {
+    try {
+      const db = createDb(c.env.DB);
 
-    const subjectCode = c.req.param("subjectCode");
-    const subject = await db.query.subjectsTable.findFirst({
-      where: eq(subjectsTable.code, subjectCode),
-    });
-    if (!subject) {
-      return c.json({ error: "Subject not found" });
+      const subjectCode = c.req.param("subjectCode");
+      const subject = await db.query.subjectsTable.findFirst({
+        where: eq(subjectsTable.code, subjectCode),
+      });
+      if (!subject) {
+        return c.json({ error: "Subject not found" });
+      }
+
+      const result = await db.query.questionsTable.findFirst({
+        where: eq(questionsTable.subjectCode, subjectCode),
+        columns: { data: true },
+      });
+      const allQuestions = result?.data;
+      if (!allQuestions) {
+        return c.json({ error: "Questions not found" });
+      }
+
+      const parsedQuestions = JSON.parse(allQuestions);
+
+      const page = +(c.req.query("page") || "0");
+      const totalPages = Math.ceil(parsedQuestions.length / PAGE_SIZE);
+      if (page < 0 || page >= totalPages) {
+        return c.json({ error: "Invalid page" });
+      }
+
+      const start = page * PAGE_SIZE;
+      const end = start + PAGE_SIZE;
+      const questions = parsedQuestions.slice(start, end);
+
+      return c.json({ questions, meta: { page, totalPages } });
+    } catch (e) {
+      console.error(e);
+      return c.json({ error: e }, 500);
     }
+  })
+  .post("/subject/:subjectCode/submit", async (c) => {
+    try {
+      const db = createDb(c.env.DB);
+      const subjectCode = c.req.param("subjectCode");
+      const body = await c.req.json();
 
-    const { data: allQuestions } = await db.query.questionsTable.findFirst({
-      where: eq(questionsTable.subjectCode, subjectCode),
-      columns: { data: true },
-    });
-    if (!allQuestions) {
-      return c.json({ error: "Questions not found" });
+      const subject = await db.query.subjectsTable.findFirst({
+        where: eq(subjectsTable.code, subjectCode),
+      });
+      if (!subject) {
+        return c.json({ error: "Subject not found" });
+      }
+
+      const result = await db.query.submissionsTable.findFirst({
+        columns: {
+          data: true,
+        },
+        where: eq(submissionsTable.subjectCode, subjectCode),
+      });
+      const submissions = result?.data;
+      if (!submissions) {
+        return c.json({ error: "Submissions not found" });
+      }
+      const parsedSubmissions = JSON.parse(submissions);
+
+      body.forEach((element) => {
+        parsedSubmissions[element.id][element.selectedAnswerIndex]++;
+      });
+    } catch (e) {
+      console.error(e);
+      return c.json({ error: e }, 500);
     }
-
-    const parsedQuestions = JSON.parse(allQuestions);
-
-    const page = +(c.req.query("page") || "0");
-    const totalPages = Math.ceil(parsedQuestions.length / PAGE_SIZE);
-    if (page < 0 || page >= totalPages) {
-      return c.json({ error: "Invalid page" });
-    }
-
-    const start = page * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-    const questions = parsedQuestions.slice(start, end);
-
-    return c.json({ questions, meta: { page, totalPages } });
-  } catch (e) {
-    console.error(e);
-    return c.json({ error: e }, 500);
-  }
-});
+  });
 
 app.notFound((c) => {
   return c.json({ error: "Not found" }, 404);

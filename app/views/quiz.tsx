@@ -25,7 +25,7 @@ export async function clientLoader({
 
   const currentPage = +(url.searchParams.get("page") || 0);
   const questionData = await getQuestions(subjectCode, currentPage);
-  return { currentPage, questionData };
+  return { currentPage, subjectCode, questionData };
 }
 
 const getQuestionsAndAnswers = (
@@ -52,9 +52,10 @@ const getQuestionsAndAnswers = (
   }));
 };
 
-export default function PracticePage() {
-  const { currentPage, questionData } = useLoaderData() as {
+export default function QuizPage() {
+  const { currentPage, subjectCode, questionData } = useLoaderData() as {
     currentPage: number;
+    subjectCode: string;
     questionData: any;
   };
   const { questions, meta } = questionData;
@@ -70,7 +71,7 @@ export default function PracticePage() {
   }, [questions, currentPage]);
 
   const handleNavigation = (newPage: number) => {
-    navigate(`/practice?page=${newPage}`);
+    navigate(`/trac-nghiem/${subjectCode}?page=${newPage}`);
   };
 
   const onAnswerSelected = (questionId: number, answerIndex: number) => {
