@@ -10,7 +10,7 @@ export default function AppLayout() {
   if (isNavigating) BProgress.start();
   else BProgress.done();
   return (
-    <div className="min-h-screen w-full overflow-hidden bg-zinc-100">
+    <div className="min-h-screen w-full overflow-hidden">
       <div className={`${styles.paddingX} ${styles.flexCenter}`}>
         <div className={`${styles.boxWidth}`}>
           <Navbar />

@@ -1,8 +1,49 @@
 import { useState } from "react";
-import { ExternalLink, Menu, XIcon } from "lucide-react";
+import { Menu, XIcon } from "lucide-react";
 import { NavLink } from "react-router";
 import logo from "/logo.png";
 import { Button } from "~/components/ui/button";
+
+const navLinks = [
+  { to: "/", label: "Trang chủ" },
+  { to: "/tai-lieu", label: "Tài liệu" },
+  { to: "/trac-nghiem", label: "Trắc nghiệm" },
+  { to: "/dong-gop", label: "Đóng góp" },
+];
+
+type NavItemProps = {
+  to: string;
+  label: string;
+  isMobile?: boolean;
+  onClick?: () => void;
+};
+
+const NavItem = ({ to, label, isMobile, onClick }: NavItemProps) => {
+  const navLinkClass = ({ isActive }: { isActive: boolean }) => {
+    return isActive ? "underline underline-offset-4" : "opacity-70";
+  };
+
+  return (
+    <li
+      className={
+        isMobile
+          ? "w-full rounded-md p-2 transition-all duration-200 ease-in-out hover:bg-zinc-500/10"
+          : ""
+      }
+    >
+      <NavLink
+        to={to}
+        onClick={onClick}
+        className={navLinkClass}
+        style={({ isTransitioning }) => ({
+          viewTransitionName: isTransitioning ? "slide" : "",
+        })}
+      >
+        {label}
+      </NavLink>
+    </li>
+  );
+};
 
 const Navbar = () => {
   const [toggle, setToggle] = useState(false);
@@ -19,50 +60,9 @@ const Navbar = () => {
         />
       </NavLink>
       <ul className="items-center justify-end flex-1 hidden gap-5 font-bold list-none sm:flex">
-        <li>
-          <NavLink
-            style={({ isActive, isTransitioning }) => {
-              return {
-                color: isActive ? "#f7b136" : "",
-                viewTransitionName: isTransitioning ? "slide" : "",
-              };
-            }}
-            to="/"
-          >
-            Trang chủ
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            style={({ isActive, isTransitioning }) => {
-              return {
-                color: isActive ? "#f7b136" : "",
-                viewTransitionName: isTransitioning ? "slide" : "",
-              };
-            }}
-            to="/tai-lieu"
-          >
-            Tài liệu
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            style={({ isActive, isTransitioning }) => {
-              return {
-                color: isActive ? "#f7b136" : "",
-                viewTransitionName: isTransitioning ? "slide" : "",
-              };
-            }}
-            to="/trac-nghiem"
-          >
-            Trắc nghiệm
-          </NavLink>
-        </li>
-        <li>
-          <a href={import.meta.env.VITE_FEEDBACK_FORM} target="_blank">
-            Đóng góp
-          </a>
-        </li>
+        {navLinks.map((link) => (
+          <NavItem key={link.to} {...link} />
+        ))}
       </ul>
 
       <div className="flex items-center justify-end sm:hidden">
@@ -75,50 +75,21 @@ const Navbar = () => {
           {toggle ? <XIcon /> : <Menu />}
         </Button>
         <div
-          className={`absolute right-0 top-24 mx-4 my-2 min-w-[150px] transform rounded-xl border-2 bg-gradient-to-br from-zinc-200 to-zinc-100 p-6 transition-all duration-300 ease-in-out ${toggle ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0"} origin-top-right`}
+          className={`z-100 absolute right-0 top-24 mx-4 my-2 min-w-[150px] transform rounded-xl border bg-card p-4 shadow-lg transition-all duration-300 ease-in-out ${
+            toggle
+              ? "scale-100 opacity-100"
+              : "pointer-events-none scale-95 opacity-0"
+          } origin-top-right`}
         >
-          <ul className="flex flex-col items-center justify-end flex-1 gap-5 font-bold list-none">
-            <li className="w-full transition-all duration-200 ease-in-out">
-              <NavLink
-                style={({ isActive, isTransitioning }) => {
-                  return {
-                    color: isActive ? "#f7b136" : "",
-                    viewTransitionName: isTransitioning ? "slide" : "",
-                  };
-                }}
-                to="/"
-              >
-                Trang chủ
-              </NavLink>
-            </li>
-            <li className="w-full transition-all duration-200 ease-in-out">
-              <NavLink
-                style={({ isActive, isTransitioning }) => {
-                  return {
-                    color: isActive ? "#f7b136" : "",
-                    viewTransitionName: isTransitioning ? "slide" : "",
-                  };
-                }}
-                to="/practice"
-              >
-                Trắc nghiệm
-              </NavLink>
-            </li>
-            <li className="w-full transition-all duration-200 ease-in-out">
-              <a href={import.meta.env.VITE_FEEDBACK_FORM} target="_blank">
-                Đóng góp
-              </a>
-            </li>
-            <li className="flex items-center">
-              <a
-                href="https://github.com/betothewizard/hocvnu"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1"
-              >
-                @betothewizard <ExternalLink size={14} />
-              </a>
-            </li>
+          <ul className="flex flex-col items-start justify-end flex-1 gap-2 list-none">
+            {navLinks.map((link) => (
+              <NavItem
+                key={link.to}
+                {...link}
+                isMobile
+                onClick={() => setToggle(false)}
+              />
+            ))}
           </ul>
         </div>
       </div>

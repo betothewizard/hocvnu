@@ -8,18 +8,21 @@ export default function LandingPage() {
       <div className={`${styles.boxWidth}`}>
         <div className={`${styles.flexStart} flex-1 flex-col px-6 sm:px-16`}>
           <div className="flex flex-row">
-            <h1 className="h-[100px] max-w-[280px] bg-gradient-to-r from-[#ffd54f] to-[#ef8e1e] bg-clip-text text-5xl font-bold text-transparent sm:h-[60px] sm:max-w-full md:h-[80px] md:text-6xl lg:h-[100px] lg:text-7xl">
-              Học VNU{" "}
+            <h1 className="h-[100px] max-w-[280px] text-5xl font-bold font-serif sm:h-[60px] sm:max-w-full md:h-[80px] md:text-6xl lg:h-[100px] lg:text-7xl">
+              HocVNU
             </h1>
           </div>
 
-          <p className="mt-5 sm:mt-0 sm:max-w-full text-xl md:text-2xl lg:text-3xl">
+          <p className="sm:mt-0 sm:max-w-full text-xl md:text-2xl lg:text-3xl">
             Ôn tập môn học <b>Nhà nước và pháp luật đại cương</b> (ĐHQGHN) với{" "}
             <b>80+</b> câu hỏi trắc nghiệm được sưu tầm.
           </p>
-          <div className="mt-10 flex flex-col items-center">
+          <div className="mt-10 flex flex-row items-center gap-5">
             <Button asChild>
-              <Link to="/practice">Ôn tập</Link>
+              <Link to="/tai-lieu">Tìm tài liệu</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link to="/trac-nghiem">Ôn tập trắc nghiệm</Link>
             </Button>
           </div>
         </div>
