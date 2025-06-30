@@ -6,7 +6,8 @@
       "binding": "DB",
       "database_name": "hocvnu-db",
       "database_id": "2674ba91-0b57-412f-9b4b-5a5d8142bd88",
-      "migrations_dir": "workers/migrations"
+      "migrations_dir": "workers/migrations",
+      "experimental_remote": true
     }
   ]
 }

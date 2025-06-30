@@ -1,5 +1,5 @@
 import type { D1Database } from "@cloudflare/workers-types";
-import { desc, eq, sql } from "drizzle-orm";
+import { count, desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createDb } from "./db";
@@ -28,7 +28,42 @@ app.get("hi", (c) => {
 });
 
 app
-  .get("/subject/:subjectCode/questions", async (c) => {
+  .get("/quizzes/metadata", async (c) => {
+    try {
+      const db = createDb(c.env.DB);
+
+      const raw = await db
+        .select({
+          code: questionsTable.subjectCode,
+          name: subjectsTable.name,
+          data: questionsTable.data,
+        })
+        .from(questionsTable)
+        .innerJoin(
+          subjectsTable,
+          eq(subjectsTable.code, questionsTable.subjectCode),
+        );
+
+      if (!raw) {
+        return c.json({ error: "Subjects not found" });
+      }
+
+      const metadata = raw.map((row) => {
+        const parsedQuestions = JSON.parse(row.data);
+        return {
+          code: row.code,
+          name: row.name,
+          total: parsedQuestions.length,
+        };
+      });
+
+      return c.json(metadata);
+    } catch (e) {
+      console.error(e);
+      return c.json({ error: e }, 500);
+    }
+  })
+  .get("/subject/:subjectCode/quizzes", async (c) => {
     try {
       const db = createDb(c.env.DB);
 

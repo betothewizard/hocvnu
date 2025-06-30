@@ -1,5 +1,5 @@
 export const styles = {
-  boxWidth: "lg:max-w-[900px] w-full",
+  boxWidth: "lg:max-w-[1000px] w-full",
 
   flexCenter: "flex justify-center items-center",
   flexStart: "flex justify-center items-start",

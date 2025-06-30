@@ -50,16 +50,17 @@ const Navbar = () => {
 
   return (
     <nav className="flex items-center justify-between w-full py-10">
-      <NavLink to="/">
+      <NavLink to="/" className="flex items-center space-x-4">
         <img
           src={logo}
           width={75}
           height={75}
           alt="hocvnu"
-          className="w-[75px] pt-2"
+          className="w-[50px] pt-2"
         />
+        <span className="text-4xl">hocvnu</span>
       </NavLink>
-      <ul className="items-center justify-end flex-1 hidden gap-5 font-bold list-none sm:flex">
+      <ul className="items-center justify-end flex-1 hidden gap-5 font-bold text-lg list-none sm:flex">
         {navLinks.map((link) => (
           <NavItem key={link.to} {...link} />
         ))}

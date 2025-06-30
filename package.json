@@ -17,7 +17,7 @@
     "db:migrate-local": "wrangler d1 migrations apply hocvnu-db --local",
     "db:seed": "wrangler d1 execute hocvnu-db --file=./seed.sql",
     "db:studio": "drizzle-kit studio",
-    "dev:worker": "wrangler dev workers/index.ts",
+    "dev:worker": "wrangler dev workers/index.ts --x-remote-bindings",
     "db:insight": "wrangler d1 insights hocvnu-db --sortBy reads --timePeriod 7d"
   },
   "dependencies": {
