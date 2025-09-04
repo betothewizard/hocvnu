@@ -1,4 +1,4 @@
-import { styles } from "~/styles";
+import { styles } from "~/app/styles";
 
 export default function ContributePage() {
   return (

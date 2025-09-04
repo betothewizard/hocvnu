@@ -1,4 +1,5 @@
-import type { IQuizMetadata } from "~/types/quizzes";
+import { getEnv } from "./../lib/utils";
+import type { IQuizMetadata } from "~/app/types/quizzes";
 
 export const getQuestions = async (subjectCode: string, page: number) => {
   const response = await fetch(
@@ -14,7 +15,7 @@ export const getQuestions = async (subjectCode: string, page: number) => {
 
 export const getQuizzesMetadata = async (): Promise<IQuizMetadata[]> => {
   const response = await fetch(
-    `${import.meta.env.VITE_WORKER_URL}/api/quizzes/metadata`,
+    `${getEnv("VITE_WORKER_URL")}/api/quizzes/metadata`,
     {
       method: "GET",
     },

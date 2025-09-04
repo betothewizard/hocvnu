@@ -2,8 +2,8 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { count, desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { createDb } from "./db";
-import { questionsTable, subjectsTable, submissionsTable } from "./db/schema";
+import { createDb } from "~/db";
+import { questionsTable, subjectsTable, submissionsTable } from "~/db/schema";
 import { PAGE_SIZE } from "./constants";
 
 interface Env {

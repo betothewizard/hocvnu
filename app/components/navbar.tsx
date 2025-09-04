@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Menu, XIcon } from "lucide-react";
 import { NavLink } from "react-router";
 import logo from "/logo.png";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/app/components/ui/button";
 
 const navLinks = [
   { to: "/", label: "Trang chủ" },

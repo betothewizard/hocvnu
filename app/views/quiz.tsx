@@ -1,10 +1,10 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { redirect, useLoaderData, useNavigate, useParams } from "react-router";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/app/components/ui/button";
 import { CustomDialog } from "../components/custom-dialog";
 import { Question } from "../components/question-ui";
-import { getQuestions } from "../services/getQuestions";
+import { getQuestions } from "../services/quizzes";
 import { postSubmission } from "../services/postSubmission";
 import { styles } from "../styles";
 import type { QuestionType } from "../types/question";
@@ -13,10 +13,7 @@ import type { Route } from "./+types/quiz";
 
 const QUESTIONS_PER_PAGE = 10;
 
-export async function clientLoader({
-  request,
-  params,
-}: Route.ClientLoaderArgs) {
+export async function loader({ request, params }: Route.ClientLoaderArgs) {
   const url = new URL(request.url);
   const { subjectCode } = params;
   // if (!subjectCode) {

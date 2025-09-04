@@ -3,11 +3,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "~/components/ui/card";
-import { styles } from "~/styles";
+} from "~/app/components/ui/card";
+import { styles } from "~/app/styles";
 import type { Route } from "./+types/quizzes";
-import { getQuizzesMetadata } from "~/services/getQuestions";
-import { Button } from "~/components/ui/button";
+import { getQuizzesMetadata } from "~/app/services/quizzes";
+import { Button } from "~/app/components/ui/button";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 

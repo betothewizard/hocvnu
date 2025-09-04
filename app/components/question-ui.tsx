@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import type { QuestionType } from "../types/question";
 import { radio } from "../styles";
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "~/app/components/ui/radio-group";
 
 interface QuestionProps {
   questionType: QuestionType;

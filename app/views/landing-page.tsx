@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { styles } from "../styles";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/app/components/ui/button";
 
 export default function LandingPage() {
   return (
