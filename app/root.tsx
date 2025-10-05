@@ -10,6 +10,7 @@ import {
 import { scan } from "react-scan";
 import type { Route } from "./+types/root";
 import "./styles/app.css";
+import { CountdownBanner } from "./components/banner";
 
 export const links: Route.LinksFunction = () => [
 	{
@@ -86,6 +87,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
+				<CountdownBanner />
 				<div className="texture" />
 				{children}
 				<ScrollRestoration />

@@ -24,7 +24,7 @@ app.use(
 	}),
 );
 
-app.get("hi", (c) => {
+app.get("/hi", (c) => {
 	return c.text("Hello");
 });
 
@@ -139,25 +139,25 @@ app
 
 app.post("/upload", async (c) => {
 	const formData = await c.req.formData();
-	const file = formData.get("file") as unknown as File;
+	const files = formData.getAll("file") as unknown as File[];
 
-	if (!file) {
+	if (!files || files.length === 0) {
 		return c.json({ error: "No file uploaded" }, 400);
 	}
 
-	const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
-
 	try {
-		console.log(c.env.HOCVNU_R2);
-		await c.env.HOCVNU_R2.put(sanitizedFilename, await file.arrayBuffer(), {
-			httpMetadata: {
-				contentType: file.type,
-			},
-		});
-		return c.json({ message: "File uploaded successfully" });
+		for (const file of files) {
+			const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
+			await c.env.HOCVNU_R2.put(sanitizedFilename, await file.arrayBuffer(), {
+				httpMetadata: {
+					contentType: file.type,
+				},
+			});
+		}
+		return c.json({ message: "Files uploaded successfully" });
 	} catch (e) {
 		console.error(e);
-		return c.json({ error: "Failed to upload file" }, 500);
+		return c.json({ error: "Failed to upload files" }, 500);
 	}
 });
 
