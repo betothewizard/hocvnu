@@ -9,6 +9,8 @@ import { PAGE_SIZE } from "./constants";
 interface Env {
 	DB: D1Database;
 	HOCVNU_R2: R2Bucket;
+	TELEGRAM_BOT_TOKEN: string;
+	TELEGRAM_CHAT_ID: string;
 }
 
 const ALLOWED_ORIGIN = "*";
@@ -145,6 +147,13 @@ app.post("/upload", async (c) => {
 		return c.json({ error: "No file uploaded" }, 400);
 	}
 
+	const uploadedFileNames: string[] = [];
+	const clientIp = c.req.raw.headers.get("CF-Connecting-IP") || "Unknown IP";
+	const userAgent = c.req.raw.headers.get("User-Agent") || "Unknown User-Agent";
+	const detailsBlock =
+		`\n📡 <b>IP:</b> ${clientIp}` +
+		`\n🖥️ <b>User-Agent:</b> <code>${userAgent}</code>`;
+
 	try {
 		for (const file of files) {
 			const sanitizedFilename = file.name.replace(/[^a-zA-Z0-9_.-]/g, "_");
@@ -153,10 +162,43 @@ app.post("/upload", async (c) => {
 					contentType: file.type,
 				},
 			});
+
+			uploadedFileNames.push(sanitizedFilename);
 		}
+
+		let message = "<b>✅ File Upload Success!</b>\n";
+		if (uploadedFileNames.length === 1) {
+			message += `File <code>${uploadedFileNames[0]}</code> uploaded successfully.`;
+		} else {
+			message += `Multiple files uploaded successfully:\n`;
+			uploadedFileNames.forEach((name) => {
+				message += `- <code>${name}</code>\n`;
+			});
+		}
+		message += detailsBlock;
+
+		c.executionCtx.waitUntil(
+			sendTelegramNotification(
+				c.env.TELEGRAM_BOT_TOKEN,
+				c.env.TELEGRAM_CHAT_ID,
+				message,
+			),
+		);
+
 		return c.json({ message: "Files uploaded successfully" });
 	} catch (e) {
 		console.error(e);
+		let errorMessage = `<b>❌ File Upload Failed!</b>\nError: ${e instanceof Error ? e.message : String(e)}`;
+		errorMessage += detailsBlock;
+
+		c.executionCtx.waitUntil(
+			sendTelegramNotification(
+				c.env.TELEGRAM_BOT_TOKEN,
+				c.env.TELEGRAM_CHAT_ID,
+				errorMessage,
+			),
+		);
+
 		return c.json({ error: "Failed to upload files" }, 500);
 	}
 });
@@ -165,4 +207,45 @@ app.notFound((c) => {
 	return c.json({ error: "Not found" }, 404);
 });
 
+async function sendTelegramNotification(
+	botToken: string,
+	chatId: string,
+	message: string,
+): Promise<void> {
+	console.log({ botToken, chatId, message });
+	if (!botToken || !chatId) {
+		console.warn(
+			"Telegram bot token or chat ID is missing. Skipping notification.",
+		);
+		return;
+	}
+
+	const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+	try {
+		const response = await fetch(url, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				chat_id: chatId,
+				text: message,
+				parse_mode: "HTML",
+			}),
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			console.error(
+				"Failed to send Telegram notification:",
+				response.status,
+				errorData,
+			);
+		} else {
+			console.log("Telegram notification sent successfully.");
+		}
+	} catch (error) {
+		console.error("Error sending Telegram notification:", error);
+	}
+}
 export default app;

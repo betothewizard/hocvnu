@@ -9,7 +9,6 @@ export const getQuestions = async (subjectCode: string, page: number) => {
 		},
 	);
 	const data = await response.json();
-	console.log(data);
 
 	return data;
 };

@@ -67,7 +67,7 @@ const Question = (props: QuestionProps) => {
 						/>
 						<Label
 							htmlFor={`answer-${questionType.id}-${answer.id}`}
-							className={`group flex cursor-pointer rounded-xl border border-b-2 px-2 py-3  shadow-lg transition-all bg-card text-card-foreground
+							className={`group flex cursor-pointer rounded-xl border border-b-2 px-2 py-3  shadow-lg transition-all bg-card text-card-foregroun
                 peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 text-md
 
                 ${

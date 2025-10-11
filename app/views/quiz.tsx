@@ -1,11 +1,11 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { redirect, useLoaderData, useNavigate, useParams } from "react-router";
+import { useNavigate } from "react-router";
 import { Button } from "~/app/components/ui/button";
 import { CustomDialog } from "../components/custom-dialog";
 import { Question } from "../components/question-ui";
-import { getQuestions } from "../services/quizzes";
 import { postSubmission } from "../services/postSubmission";
+import { getQuestions } from "../services/quizzes";
 import { styles } from "../styles";
 import type { QuestionType } from "../types/question";
 import { shuffle } from "../utils/random";
@@ -13,13 +13,16 @@ import type { Route } from "./+types/quiz";
 
 const QUESTIONS_PER_PAGE = 10;
 
+export function shouldRevalidate({ currentUrl, nextUrl }) {
+	// re-run loader when the search string (e.g. ?page=) changes
+	console.log({ currentUrl, nextUrl });
+	return currentUrl.search !== nextUrl.search;
+}
+
 export async function loader({ request, params }: Route.ClientLoaderArgs) {
 	const url = new URL(request.url);
 	const { subjectCode } = params;
-	// if (!subjectCode) {
-	//   return redirect("/not-found");
-	// }
-
+	console.log({ url });
 	const currentPage = +(url.searchParams.get("page") || 0);
 	const questionData = await getQuestions(subjectCode, currentPage);
 	return { currentPage, subjectCode, questionData };
@@ -49,14 +52,11 @@ const getQuestionsAndAnswers = (
 	}));
 };
 
-export default function QuizPage() {
-	const { currentPage, subjectCode, questionData } = useLoaderData() as {
-		currentPage: number;
-		subjectCode: string;
-		questionData: any;
-	};
+export default function QuizPage({ loaderData }: Route.ComponentProps) {
+	const { currentPage, subjectCode, questionData } = loaderData;
 	const { questions, meta } = questionData;
-	console.log({ questions });
+	console.log("QuizPage - Current Page:", currentPage); // Added log
+	console.log("QuizPage - Total Pages:", meta.totalPages); //
 	const navigate = useNavigate();
 	const [questionsAndAnswers, setQuestionsAndAnswers] = useState<
 		QuestionType[]
@@ -69,6 +69,7 @@ export default function QuizPage() {
 	}, [questions, currentPage]);
 
 	const handleNavigation = (newPage: number) => {
+		console.log({ newPage });
 		navigate(`/trac-nghiem/${subjectCode}?page=${newPage}`);
 	};
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, XIcon } from "lucide-react";
+import { Menu, XIcon, Github } from "lucide-react";
 import { NavLink } from "react-router";
 import { Button } from "~/app/components/ui/button";
 import { Logo } from "./logo";
@@ -9,6 +9,11 @@ const navLinks = [
 	{ to: "/tai-lieu", label: "Tài liệu" },
 	{ to: "/trac-nghiem", label: "Trắc nghiệm" },
 	{ to: "/dong-gop", label: "Đóng góp" },
+	{
+		to: "https://github.com/betothewizard/hocvnu",
+		label: "GitHub",
+		external: true,
+	},
 ];
 
 type NavItemProps = {
@@ -16,9 +21,10 @@ type NavItemProps = {
 	label: string;
 	isMobile?: boolean;
 	onClick?: () => void;
+	external?: boolean;
 };
 
-const NavItem = ({ to, label, isMobile, onClick }: NavItemProps) => {
+const NavItem = ({ to, label, isMobile, onClick, external }: NavItemProps) => {
 	const navLinkClass = ({ isActive }: { isActive: boolean }) => {
 		return isActive ? "underline underline-offset-4" : "opacity-70";
 	};
@@ -31,16 +37,29 @@ const NavItem = ({ to, label, isMobile, onClick }: NavItemProps) => {
 					: ""
 			}
 		>
-			<NavLink
-				to={to}
-				onClick={onClick}
-				className={navLinkClass}
-				style={({ isTransitioning }) => ({
-					viewTransitionName: isTransitioning ? "slide" : "",
-				})}
-			>
-				{label}
-			</NavLink>
+			{external ? (
+				<a
+					href={to}
+					target="_blank"
+					rel="noopener noreferrer"
+					onClick={onClick}
+					className="opacity-70"
+					aria-label={label}
+				>
+					<Github />
+				</a>
+			) : (
+				<NavLink
+					to={to}
+					onClick={onClick}
+					className={navLinkClass}
+					style={({ isTransitioning }) => ({
+						viewTransitionName: isTransitioning ? "slide" : "",
+					})}
+				>
+					{label}
+				</NavLink>
+			)}
 		</li>
 	);
 };
