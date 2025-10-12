@@ -7,7 +7,7 @@ import { Question } from "../components/question-ui";
 import { getQuestions, submitQuiz } from "../services/quizzes";
 import { styles } from "../styles";
 import type { QuestionType } from "../types/question";
-import { shuffle } from "../utils/random";
+import { shuffle } from "../lib/random";
 import type { Route } from "./+types/quiz";
 
 const QUESTIONS_PER_PAGE = 10;
