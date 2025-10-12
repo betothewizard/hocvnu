@@ -23,9 +23,9 @@ export default function AppLayout() {
 			</div>
 
 			{/* Footer */}
-			<div className="w-full flex justify-center">
+			{/*<div className="w-full flex justify-center">
 				<div className="w-3/4">@betothewizard</div>
-			</div>
+			</div>*/}
 		</div>
 	);
 }
