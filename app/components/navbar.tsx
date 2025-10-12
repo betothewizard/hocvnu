@@ -1,125 +1,113 @@
 import { useState } from "react";
-import { ExternalLink, Menu, XIcon } from "lucide-react";
-import { Button } from "@headlessui/react";
+import { Menu, XIcon, Github } from "lucide-react";
 import { NavLink } from "react-router";
-import { LINKS } from "../utils/config";
-import logo from "/logo.png";
+import { Button } from "~/app/components/ui/button";
+import { Logo } from "./logo";
+
+const navLinks = [
+	{ to: "/", label: "Trang chủ" },
+	{ to: "/tai-lieu", label: "Tài liệu" },
+	{ to: "/trac-nghiem", label: "Trắc nghiệm" },
+	{ to: "/dong-gop", label: "Đóng góp" },
+	{
+		to: "https://github.com/betothewizard/hocvnu",
+		label: "GitHub",
+		external: true,
+	},
+];
+
+type NavItemProps = {
+	to: string;
+	label: string;
+	isMobile?: boolean;
+	onClick?: () => void;
+	external?: boolean;
+};
+
+const NavItem = ({ to, label, isMobile, onClick, external }: NavItemProps) => {
+	const navLinkClass = ({ isActive }: { isActive: boolean }) => {
+		return isActive ? "underline underline-offset-4" : "opacity-70";
+	};
+
+	return (
+		<li
+			className={
+				isMobile
+					? "w-full rounded-md p-2 transition-all duration-200 ease-in-out hover:bg-zinc-500/10"
+					: ""
+			}
+		>
+			{external ? (
+				<a
+					href={to}
+					target="_blank"
+					rel="noopener noreferrer"
+					onClick={onClick}
+					className="opacity-70"
+					aria-label={label}
+				>
+					<Github />
+				</a>
+			) : (
+				<NavLink
+					to={to}
+					onClick={onClick}
+					className={navLinkClass}
+					style={({ isTransitioning }) => ({
+						viewTransitionName: isTransitioning ? "slide" : "",
+					})}
+				>
+					{label}
+				</NavLink>
+			)}
+		</li>
+	);
+};
 
 const Navbar = () => {
-  const [toggle, setToggle] = useState(false);
+	const [toggle, setToggle] = useState(false);
 
-  return (
-    <nav className="flex items-center justify-between w-full py-10">
-      <NavLink to="/">
-        <img
-          src={logo}
-          width={90}
-          height={90}
-          alt="hoclms"
-          className="w-[90px] pt-2"
-        />
-      </NavLink>
-      <ul className="items-center justify-end flex-1 hidden gap-5 font-bold list-none sm:flex">
-        <li>
-          <NavLink
-            style={({ isActive, isTransitioning }) => {
-              return {
-                color: isActive ? "#f7b136" : "",
-                viewTransitionName: isTransitioning ? "slide" : "",
-              };
-            }}
-            to="/"
-          >
-            Trang chủ
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            style={({ isActive, isTransitioning }) => {
-              return {
-                color: isActive ? "#f7b136" : "",
-                viewTransitionName: isTransitioning ? "slide" : "",
-              };
-            }}
-            to="/practice"
-          >
-            Ôn tập
-          </NavLink>
-        </li>
-        <li>
-          <a href={LINKS.feedbackForm} target="_blank">
-            Đóng góp
-          </a>
-        </li>
-        <li className="flex items-center">
-          <a
-            href="https://github.com/betothewizard/hoclms"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1"
-          >
-            @betothewizard <ExternalLink size={14} />
-          </a>
-        </li>
-      </ul>
+	return (
+		<nav className="flex items-center justify-between w-full py-10">
+			<NavLink to="/" className="flex items-center space-x-4">
+				<Logo size={64} role="img" aria-label="hocvnu" />
+			</NavLink>
+			<ul className="items-center justify-end flex-1 hidden gap-5 font-bold text-lg list-none sm:flex">
+				{navLinks.map((link) => (
+					<NavItem key={link.to} {...link} />
+				))}
+			</ul>
 
-      <div className="flex items-center justify-end sm:hidden">
-        <Button
-          onClick={() => setToggle((t) => !t)}
-          className="transition-transform duration-200 ease-in-out hover:scale-110"
-        >
-          {toggle ? <XIcon /> : <Menu />}
-        </Button>
-        <div
-          className={`absolute right-0 top-24 mx-4 my-2 min-w-[150px] transform rounded-xl border-2 bg-gradient-to-br from-zinc-200 to-zinc-100 p-6 transition-all duration-300 ease-in-out ${toggle ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0"} origin-top-right`}
-        >
-          <ul className="flex flex-col items-center justify-end flex-1 gap-5 font-bold list-none">
-            <li className="w-full transition-all duration-200 ease-in-out">
-              <NavLink
-                style={({ isActive, isTransitioning }) => {
-                  return {
-                    color: isActive ? "#f7b136" : "",
-                    viewTransitionName: isTransitioning ? "slide" : "",
-                  };
-                }}
-                to="/"
-              >
-                Trang chủ
-              </NavLink>
-            </li>
-            <li className="w-full transition-all duration-200 ease-in-out">
-              <NavLink
-                style={({ isActive, isTransitioning }) => {
-                  return {
-                    color: isActive ? "#f7b136" : "",
-                    viewTransitionName: isTransitioning ? "slide" : "",
-                  };
-                }}
-                to="/practice"
-              >
-                Ôn tập
-              </NavLink>
-            </li>
-            <li className="w-full transition-all duration-200 ease-in-out">
-              <a href={LINKS.feedbackForm} target="_blank">
-                Đóng góp
-              </a>
-            </li>
-            <li className="flex items-center">
-              <a
-                href="https://github.com/betothewizard/hoclms"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1"
-              >
-                @betothewizard <ExternalLink size={14} />
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  );
+			<div className="flex items-center justify-end sm:hidden">
+				<Button
+					variant="ghost"
+					size="icon"
+					onClick={() => setToggle((t) => !t)}
+					className="transition-transform duration-200 ease-in-out hover:scale-110"
+				>
+					{toggle ? <XIcon /> : <Menu />}
+				</Button>
+				<div
+					className={`z-100 absolute right-0 top-24 mx-4 my-2 min-w-[150px] transform rounded-xl border bg-card p-4 shadow-lg transition-all duration-300 ease-in-out ${
+						toggle
+							? "scale-100 opacity-100"
+							: "pointer-events-none scale-95 opacity-0"
+					} origin-top-right`}
+				>
+					<ul className="flex flex-col items-start justify-end flex-1 gap-2 list-none">
+						{navLinks.map((link) => (
+							<NavItem
+								key={link.to}
+								{...link}
+								isMobile
+								onClick={() => setToggle(false)}
+							/>
+						))}
+					</ul>
+				</div>
+			</div>
+		</nav>
+	);
 };
 
 export { Navbar };
