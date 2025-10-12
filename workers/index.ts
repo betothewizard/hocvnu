@@ -114,8 +114,9 @@ app
 			const subject = await db.query.subjectsTable.findFirst({
 				where: eq(subjectsTable.code, subjectCode),
 			});
+			console.log({ subject });
 			if (!subject) {
-				return c.json({ error: "Subject not found" });
+				return c.json({ error: "Subject not found" }, 400);
 			}
 
 			const result = await db.query.submissionsTable.findFirst({
@@ -126,13 +127,22 @@ app
 			});
 			const submissions = result?.data;
 			if (!submissions) {
-				return c.json({ error: "Submissions not found" });
+				return c.json({ error: "Submissions not found" }, 500);
 			}
 			const parsedSubmissions = JSON.parse(submissions);
 
 			body.forEach((element) => {
 				parsedSubmissions[element.id][element.selectedAnswerIndex]++;
 			});
+
+			console.log({ submissions, parsedSubmissions });
+
+			const a = await db
+				.update(submissionsTable)
+				.set({ data: JSON.stringify(parsedSubmissions) })
+				.where(eq(submissionsTable.subjectCode, subjectCode));
+
+			return c.json({ message: "Submit successfully" }, 200);
 		} catch (e) {
 			console.error(e);
 			return c.json({ error: e }, 500);

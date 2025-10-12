@@ -9,7 +9,7 @@
 		"build": "react-router build",
 		"start": "react-router-serve ./build/server/index.js",
 		"scan": "react-scan",
-		"deploy:app": "react-router build && wrangler pages deploy --project-name hocvnu",
+		"deploy:app": "react-router build && wrangler pages deploy build/client --project-name hocvnu",
 		"deploy:worker": "wrangler deploy workers/index.ts --name hocvnu-worker",
 		"typecheck": "react-router typegen && tsc",
 		"db:generate": "drizzle-kit generate",

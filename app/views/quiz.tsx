@@ -1,11 +1,10 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import { Button } from "~/app/components/ui/button";
 import { CustomDialog } from "../components/custom-dialog";
 import { Question } from "../components/question-ui";
-import { postSubmission } from "../services/postSubmission";
-import { getQuestions } from "../services/quizzes";
+import { getQuestions, submitQuiz } from "../services/quizzes";
 import { styles } from "../styles";
 import type { QuestionType } from "../types/question";
 import { shuffle } from "../utils/random";
@@ -13,17 +12,9 @@ import type { Route } from "./+types/quiz";
 
 const QUESTIONS_PER_PAGE = 10;
 
-export function shouldRevalidate({ currentUrl, nextUrl }) {
-	// re-run loader when the search string (e.g. ?page=) changes
-	console.log({ currentUrl, nextUrl });
-	return currentUrl.search !== nextUrl.search;
-}
-
-export async function loader({ request, params }: Route.ClientLoaderArgs) {
-	const url = new URL(request.url);
-	const { subjectCode } = params;
-	console.log({ url });
-	const currentPage = +(url.searchParams.get("page") || 0);
+export async function loader({ params }: Route.ClientLoaderArgs) {
+	const { subjectCode, page } = params;
+	const currentPage = page ? Number(page) : 0;
 	const questionData = await getQuestions(subjectCode, currentPage);
 	return { currentPage, subjectCode, questionData };
 }
@@ -55,9 +46,7 @@ const getQuestionsAndAnswers = (
 export default function QuizPage({ loaderData }: Route.ComponentProps) {
 	const { currentPage, subjectCode, questionData } = loaderData;
 	const { questions, meta } = questionData;
-	console.log("QuizPage - Current Page:", currentPage); // Added log
-	console.log("QuizPage - Total Pages:", meta.totalPages); //
-	const navigate = useNavigate();
+
 	const [questionsAndAnswers, setQuestionsAndAnswers] = useState<
 		QuestionType[]
 	>([]);
@@ -67,11 +56,6 @@ export default function QuizPage({ loaderData }: Route.ComponentProps) {
 	useEffect(() => {
 		setQuestionsAndAnswers(getQuestionsAndAnswers(questions, currentPage));
 	}, [questions, currentPage]);
-
-	const handleNavigation = (newPage: number) => {
-		console.log({ newPage });
-		navigate(`/trac-nghiem/${subjectCode}?page=${newPage}`);
-	};
 
 	const onAnswerSelected = (questionId: number, answerIndex: number) => {
 		setQuestionsAndAnswers((prevQuestions) => {
@@ -99,7 +83,7 @@ export default function QuizPage({ loaderData }: Route.ComponentProps) {
 			}));
 
 			try {
-				await postSubmission(submission);
+				await submitQuiz(submission, subjectCode);
 			} catch (error) {
 				console.error(error);
 			}
@@ -125,26 +109,28 @@ export default function QuizPage({ loaderData }: Route.ComponentProps) {
 					/>
 				)}
 				<div className="flex justify-center space-x-4">
-					<Button
-						className={`my-8 rounded-full border-2 border-zinc-600 px-2 hover:bg-gray-200/50 ${currentPage === 0 ? "opacity-0" : ""}`}
-						onClick={() => handleNavigation(currentPage - 1)}
-						disabled={currentPage === 0}
+					<Link
+						to={`/trac-nghiem/${subjectCode}/${currentPage - 1}`}
+						className={`my-8 flex items-center justify-center rounded-full border-2 border-zinc-600 px-2 hover:bg-gray-200/50 ${currentPage === 0 ? "pointer-events-none opacity-0" : ""}`}
+						aria-disabled={currentPage === 0}
+						tabIndex={currentPage === 0 ? -1 : undefined}
 					>
-						<ArrowLeft></ArrowLeft>
-					</Button>
+						<ArrowLeft />
+					</Link>
 					<Button
 						className="my-8 rounded-xl border border-[#ef8e1e]/50 bg-[#f7b136] px-7 py-2 text-lg text-white hover:bg-[#f7b136]/90"
 						onClick={onCheckAnswer}
 					>
 						Kiểm tra
 					</Button>
-					<Button
-						className={`my-8 rounded-full border-2 border-zinc-600 px-2 hover:bg-gray-200/50 ${currentPage === meta.totalPages - 1 ? "opacity-0" : ""}`}
-						onClick={() => handleNavigation(currentPage + 1)}
-						disabled={currentPage === meta.totalPages - 1}
+					<Link
+						to={`/trac-nghiem/${subjectCode}/${currentPage + 1}`}
+						className={`my-8 flex items-center justify-center rounded-full border-2 border-zinc-600 px-2 hover:bg-gray-200/50 ${currentPage === meta.totalPages - 1 ? "pointer-events-none opacity-0" : ""}`}
+						aria-disabled={currentPage === meta.totalPages - 1}
+						tabIndex={currentPage === meta.totalPages - 1 ? -1 : undefined}
 					>
-						<ArrowRight></ArrowRight>
-					</Button>
+						<ArrowRight />
+					</Link>
 				</div>
 			</div>
 		</div>

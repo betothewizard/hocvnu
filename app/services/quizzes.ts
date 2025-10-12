@@ -24,3 +24,21 @@ export const getQuizzesMetadata = async (): Promise<IQuizMetadata[]> => {
 
 	return data;
 };
+
+export const submitQuiz = async (
+	submission: {
+		id: number;
+		selectedAnswerIndex: number;
+	}[],
+	subjectCode: string,
+) => {
+	const response = await fetch(
+		`${import.meta.env.VITE_WORKER_URL}/api/subject/${subjectCode}/submit`,
+		{
+			method: "POST",
+			body: JSON.stringify(submission),
+		},
+	);
+
+	return response.json();
+};
