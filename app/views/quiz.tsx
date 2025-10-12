@@ -108,24 +108,19 @@ export default function QuizPage({ loaderData }: Route.ComponentProps) {
 						currentQuestionsLength={questionsAndAnswers.length}
 					/>
 				)}
-				<div className="flex justify-center space-x-4">
+				<div className="flex justify-center space-x-6 mb-8">
 					<Link
 						to={`/trac-nghiem/${subjectCode}/${currentPage - 1}`}
-						className={`my-8 flex items-center justify-center rounded-full border-2 border-zinc-600 px-2 hover:bg-gray-200/50 ${currentPage === 0 ? "pointer-events-none opacity-0" : ""}`}
+						className={`flex items-center justify-center rounded-full border-2 border-zinc-600 px-2 hover:bg-gray-200/50 ${currentPage === 0 ? "pointer-events-none opacity-0" : ""}`}
 						aria-disabled={currentPage === 0}
 						tabIndex={currentPage === 0 ? -1 : undefined}
 					>
 						<ArrowLeft />
 					</Link>
-					<Button
-						className="my-8 rounded-xl border border-[#ef8e1e]/50 bg-[#f7b136] px-7 py-2 text-lg text-white hover:bg-[#f7b136]/90"
-						onClick={onCheckAnswer}
-					>
-						Kiểm tra
-					</Button>
+					<Button onClick={onCheckAnswer}>Kiểm tra</Button>
 					<Link
 						to={`/trac-nghiem/${subjectCode}/${currentPage + 1}`}
-						className={`my-8 flex items-center justify-center rounded-full border-2 border-zinc-600 px-2 hover:bg-gray-200/50 ${currentPage === meta.totalPages - 1 ? "pointer-events-none opacity-0" : ""}`}
+						className={`flex items-center justify-center rounded-full border-2 border-zinc-600 px-2 hover:bg-gray-200/50 ${currentPage === meta.totalPages - 1 ? "pointer-events-none opacity-0" : ""}`}
 						aria-disabled={currentPage === meta.totalPages - 1}
 						tabIndex={currentPage === meta.totalPages - 1 ? -1 : undefined}
 					>

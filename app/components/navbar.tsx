@@ -1,7 +1,18 @@
+import { Github, Menu, XIcon } from "lucide-react";
 import { useState } from "react";
-import { Menu, XIcon, Github } from "lucide-react";
 import { NavLink } from "react-router";
 import { Button } from "~/app/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "~/app/components/ui/dropdown-menu";
+import {
+	NavigationMenu,
+	NavigationMenuItem,
+	NavigationMenuList,
+} from "~/app/components/ui/navigation-menu";
 import { Logo } from "./logo";
 
 const navLinks = [
@@ -9,102 +20,101 @@ const navLinks = [
 	{ to: "/tai-lieu", label: "Tài liệu" },
 	{ to: "/trac-nghiem", label: "Trắc nghiệm" },
 	{ to: "/dong-gop", label: "Đóng góp" },
-	{
-		to: "https://github.com/betothewizard/hocvnu",
-		label: "GitHub",
-		external: true,
-	},
 ];
 
-type NavItemProps = {
-	to: string;
-	label: string;
-	isMobile?: boolean;
-	onClick?: () => void;
-	external?: boolean;
-};
-
-const NavItem = ({ to, label, isMobile, onClick, external }: NavItemProps) => {
-	const navLinkClass = ({ isActive }: { isActive: boolean }) => {
-		return isActive ? "underline underline-offset-4" : "opacity-70";
-	};
-
-	return (
-		<li
-			className={
-				isMobile
-					? "w-full rounded-md p-2 transition-all duration-200 ease-in-out hover:bg-zinc-500/10"
-					: ""
-			}
-		>
-			{external ? (
-				<a
-					href={to}
-					target="_blank"
-					rel="noopener noreferrer"
-					onClick={onClick}
-					className="opacity-70"
-					aria-label={label}
-				>
-					<Github />
-				</a>
-			) : (
-				<NavLink
-					to={to}
-					onClick={onClick}
-					className={navLinkClass}
-					style={({ isTransitioning }) => ({
-						viewTransitionName: isTransitioning ? "slide" : "",
-					})}
-				>
-					{label}
-				</NavLink>
-			)}
-		</li>
-	);
+const githubLink = {
+	to: "https://github.com/betothewizard/hocvnu",
+	label: "GitHub",
 };
 
 const Navbar = () => {
-	const [toggle, setToggle] = useState(false);
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+	const navLinkClass = ({ isActive }: { isActive: boolean }) => {
+		return isActive
+			? "underline underline-offset-4"
+			: "opacity-70 transition-opacity hover:opacity-100";
+	};
+
+	const navLinkStyle = ({ isTransitioning }: { isTransitioning: boolean }) => ({
+		viewTransitionName: isTransitioning ? "slide" : "",
+	});
 
 	return (
 		<nav className="flex items-center justify-between w-full py-10">
 			<NavLink to="/" className="flex items-center space-x-4">
 				<Logo size={64} role="img" aria-label="hocvnu" />
 			</NavLink>
-			<ul className="items-center justify-end flex-1 hidden gap-5 font-bold text-lg list-none sm:flex">
-				{navLinks.map((link) => (
-					<NavItem key={link.to} {...link} />
-				))}
-			</ul>
 
+			{/* Desktop Navigation */}
+			<NavigationMenu className="hidden sm:flex justify-end flex-1">
+				<NavigationMenuList className="gap-5 font-bold text-lg">
+					{navLinks.map((link) => (
+						<NavigationMenuItem key={link.to}>
+							<NavLink
+								to={link.to}
+								className={navLinkClass}
+								style={navLinkStyle}
+							>
+								{link.label}
+							</NavLink>
+						</NavigationMenuItem>
+					))}
+					<NavigationMenuItem>
+						<a
+							href={githubLink.to}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="opacity-70 transition-opacity hover:opacity-100"
+							aria-label={githubLink.label}
+						>
+							<Github />
+						</a>
+					</NavigationMenuItem>
+				</NavigationMenuList>
+			</NavigationMenu>
+
+			{/* Mobile Navigation */}
 			<div className="flex items-center justify-end sm:hidden">
-				<Button
-					variant="ghost"
-					size="icon"
-					onClick={() => setToggle((t) => !t)}
-					className="transition-transform duration-200 ease-in-out hover:scale-110"
-				>
-					{toggle ? <XIcon /> : <Menu />}
-				</Button>
-				<div
-					className={`z-100 absolute right-0 top-24 mx-4 my-2 min-w-[150px] transform rounded-xl border bg-card p-4 shadow-lg transition-all duration-300 ease-in-out ${
-						toggle
-							? "scale-100 opacity-100"
-							: "pointer-events-none scale-95 opacity-0"
-					} origin-top-right`}
-				>
-					<ul className="flex flex-col items-start justify-end flex-1 gap-2 list-none">
+				<DropdownMenu onOpenChange={setIsMobileMenuOpen}>
+					<DropdownMenuTrigger asChild>
+						<Button
+							variant="ghost"
+							size="icon"
+							className="transition-transform duration-200 ease-in-out hover:scale-110"
+						>
+							{isMobileMenuOpen ? (
+								<XIcon className="h-6 w-6" />
+							) : (
+								<Menu className="h-6 w-6" />
+							)}
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end" className="min-w-[150px]">
 						{navLinks.map((link) => (
-							<NavItem
+							<DropdownMenuItem
 								key={link.to}
-								{...link}
-								isMobile
-								onClick={() => setToggle(false)}
-							/>
+								asChild
+								className="text-base py-2 px-3"
+							>
+								<NavLink to={link.to} className="w-full" style={navLinkStyle}>
+									{link.label}
+								</NavLink>
+							</DropdownMenuItem>
 						))}
-					</ul>
-				</div>
+						<DropdownMenuItem asChild className="text-base py-2 px-3">
+							<a
+								href={githubLink.to}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="w-full flex items-center justify-between"
+							>
+								GitHub
+								<Github className="h-5 w-5" />
+							</a>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 		</nav>
 	);
