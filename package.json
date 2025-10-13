@@ -10,7 +10,7 @@
 		"start": "react-router-serve ./build/server/index.js",
 		"scan": "react-scan",
 		"deploy:app": "react-router build && wrangler pages deploy build/client --project-name hocvnu",
-		"deploy:worker": "wrangler deploy workers/index.ts --name hocvnu-worker",
+		"deploy:worker": "wrangler versions secret bulk .env --name hocvnu-worker && wrangler deploy workers/index.ts --name hocvnu-worker",
 		"typecheck": "react-router typegen && tsc",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "wrangler d1 migrations apply hocvnu-db --remote",
