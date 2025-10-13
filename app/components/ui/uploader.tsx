@@ -1,6 +1,14 @@
 "use client";
 
-import { UploadCloud, File as FileIcon, X } from "lucide-react";
+import {
+  UploadCloud,
+  X,
+  FileText,
+  Image as ImageIcon,
+  FileSpreadsheet,
+  FileCode,
+  FileArchive,
+} from "lucide-react";
 import * as React from "react";
 import { useDropzone, type DropzoneOptions } from "react-dropzone";
 import { twMerge } from "tailwind-merge";
@@ -98,6 +106,44 @@ const Uploader = React.forwardRef<HTMLInputElement, InputProps>(
       onChange?.(newFiles || []);
     };
 
+    const getFileIcon = (file: File) => {
+      const type = file.type;
+      const name = file.name.toLowerCase();
+
+      if (type.startsWith("image/"))
+        return <ImageIcon size={20} className="text-blue-500" />;
+      if (type.includes("pdf"))
+        return <FileText size={20} className="text-red-500" />;
+      if (
+        type.includes("zip") ||
+        type.includes("compressed") ||
+        type.includes("rar") ||
+        name.endsWith(".zip") ||
+        name.endsWith(".rar") ||
+        name.endsWith(".7z")
+      ) {
+        return <FileArchive size={20} className="text-purple-700" />;
+      }
+      if (type.includes("sheet") || type.includes("excel"))
+        return <FileSpreadsheet size={20} className="text-green-500" />;
+      if (type.includes("text") || type.includes("document"))
+        return <FileText size={20} className="text-blue-500" />;
+      if (
+        type.includes("code") ||
+        type.includes("json") ||
+        type.includes("xml")
+      )
+        return <FileCode size={20} className="text-purple-500" />;
+      return <FileText size={20} className="text-gray-500" />;
+    };
+
+    const getFilePreview = (file: File) => {
+      if (file.type.startsWith("image/")) {
+        return URL.createObjectURL(file);
+      }
+      return null;
+    };
+
     return (
       <div>
         <div
@@ -146,25 +192,36 @@ const Uploader = React.forwardRef<HTMLInputElement, InputProps>(
         )}
 
         {value && value.length > 0 && (
-          <div className="mt-4 space-y-2">
-            {value.map((file, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between p-2 border rounded-md"
-              >
-                <div className="flex items-center gap-2">
-                  <FileIcon size={20} />
-                  <span className="text-sm">{file.name}</span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeFile(file)}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {value.map((file, i) => {
+              const preview = getFilePreview(file);
+              return (
+                <div
+                  key={i}
+                  className="group relative inline-flex items-center gap-2 px-3 py-1 border rounded-sm bg-background transition-colors max-w-[240px]"
                 >
-                  <X size={16} />
-                </Button>
-              </div>
-            ))}
+                  {preview ? (
+                    <img
+                      src={preview}
+                      alt={file.name}
+                      className="w-6 h-6 object-cover rounded-full shrink-0 ring-2 ring-background"
+                    />
+                  ) : (
+                    <div className="shrink-0">{getFileIcon(file)}</div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate">{file.name}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(file)}
+                    className="shrink-0 hover:text-destructive transition-colors opacity-70 hover:opacity-100 cursor-pointer"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

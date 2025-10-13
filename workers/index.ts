@@ -231,6 +231,56 @@ app.post("/upload", async (c) => {
   }
 });
 
+app.post("/feedback", async (c) => {
+  const formData = await c.req.formData();
+  const feedback = formData.get("feedback") as string;
+  const contact = formData.get("contact") as string;
+  const images = formData.getAll("images") as File[];
+
+  if (!feedback || !feedback.trim()) {
+    return c.json({ error: "Feedback is required" }, 400);
+  }
+
+  const clientIp = c.req.raw.headers.get("CF-Connecting-IP") || "Unknown IP";
+  const userAgent = c.req.raw.headers.get("User-Agent") || "Unknown User-Agent";
+
+  let message =
+    `<b>💬 New Feedback Received!</b>\n\n` + `<b>Content:</b>\n${feedback}\n\n`;
+
+  if (contact) {
+    message += `📞 <b>Contact:</b> ${contact}\n\n`;
+  }
+
+  message +=
+    `📡 <b>IP:</b> ${clientIp}\n` +
+    `🖥️ <b>User-Agent:</b> <code>${userAgent}</code>`;
+
+  try {
+    // Send text message first
+    await sendTelegramNotification(
+      c.env.TELEGRAM_BOT_TOKEN,
+      c.env.TELEGRAM_CHAT_ID,
+      message
+    );
+
+    // Send images if any
+    if (images && images.length > 0) {
+      c.executionCtx.waitUntil(
+        sendTelegramImages(
+          c.env.TELEGRAM_BOT_TOKEN,
+          c.env.TELEGRAM_CHAT_ID,
+          images
+        )
+      );
+    }
+
+    return c.json({ message: "Feedback submitted successfully" });
+  } catch (e) {
+    console.error(e);
+    return c.json({ error: "Failed to submit feedback" }, 500);
+  }
+});
+
 app.notFound((c) => {
   return c.json({ error: "Not found" }, 404);
 });
@@ -299,6 +349,47 @@ async function verifyTurnstileToken(
   } catch (error) {
     console.error("Error verifying Turnstile token:", error);
     return { success: false };
+  }
+}
+
+async function sendTelegramImages(
+  botToken: string,
+  chatId: string,
+  images: File[]
+): Promise<void> {
+  if (!botToken || !chatId) {
+    console.warn(
+      "Telegram bot token or chat ID is missing. Skipping image upload."
+    );
+    return;
+  }
+
+  const url = `https://api.telegram.org/bot${botToken}/sendPhoto`;
+
+  for (const image of images) {
+    try {
+      const formData = new FormData();
+      formData.append("chat_id", chatId);
+      formData.append("photo", image);
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(
+          "Failed to send Telegram image:",
+          response.status,
+          errorData
+        );
+      } else {
+        console.log("Telegram image sent successfully.");
+      }
+    } catch (error) {
+      console.error("Error sending Telegram image:", error);
+    }
   }
 }
 

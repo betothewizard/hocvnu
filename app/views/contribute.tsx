@@ -15,56 +15,74 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/app/components/ui/dialog";
+import { Label } from "~/app/components/ui/label";
+import { Textarea } from "~/app/components/ui/textarea";
 import { Uploader } from "~/app/components/ui/uploader";
 import { uploadFiles } from "~/app/services/upload";
 import { styles } from "~/app/styles";
 import { getEnv } from "~/app/lib/utils";
+import { Input } from "../components/ui/input";
 
 export default function ContributePage() {
   const [files, setFiles] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [contact, setContact] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  const handleFileChange = (files: File[]) => {
-    setFiles(files);
-    setMessage("");
-  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!files || files.length === 0) {
-      setMessage("Vui lòng chọn tệp để tải lên.");
+    const imageFiles = files.filter((f) => f.type.startsWith("image/"));
+    const docFiles = files.filter((f) => !f.type.startsWith("image/"));
+
+    if (!files.length && !feedback.trim()) {
+      setError("Vui lòng tải lên file hoặc nhập góp ý.");
       return;
     }
 
-    if (!turnstileToken) {
-      setMessage("Vui lòng hoàn thành xác minh bảo mật.");
+    if (docFiles.length && !turnstileToken) {
+      setError("Vui lòng hoàn thành xác minh bảo mật để tải lên tài liệu.");
       return;
     }
 
-    setUploading(true);
+    setSubmitting(true);
+    setError("");
 
     try {
-      await uploadFiles(files, turnstileToken);
-      setShowSuccessDialog(true);
-      setMessage("");
-      setFiles([]);
-      // Không reset token - giữ lại để upload lần sau
-    } catch (error) {
-      if (error instanceof Error) {
-        setMessage(error.message);
-      } else {
-        setMessage("Đã xảy ra lỗi trong quá trình tải lên.");
+      if (docFiles.length && turnstileToken) {
+        await uploadFiles(docFiles, turnstileToken);
       }
-      console.error("Upload error:", error);
-      // Chỉ reset khi có lỗi
-      turnstileRef.current?.reset();
-      setTurnstileToken(null);
+
+      if (feedback.trim() || imageFiles.length) {
+        const formData = new FormData();
+        formData.append("feedback", feedback || "Đóng góp tài liệu/hình ảnh");
+        if (contact.trim()) formData.append("contact", contact.trim());
+        imageFiles.forEach((img) => formData.append("images", img));
+
+        const res = await fetch(`${getEnv("VITE_WORKER_URL")}/api/feedback`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error("Gửi góp ý thất bại");
+      }
+
+      setSuccess(true);
+      setFiles([]);
+      setFeedback("");
+      setContact("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Đã xảy ra lỗi.");
+      if (docFiles.length) {
+        turnstileRef.current?.reset();
+        setTurnstileToken(null);
+      }
     } finally {
-      setUploading(false);
+      setSubmitting(false);
     }
   };
 
@@ -74,57 +92,92 @@ export default function ContributePage() {
         <div className={`${styles.boxWidth}`}>
           <Card>
             <CardHeader>
-              <CardTitle>Đóng góp Tài liệu</CardTitle>
+              <CardTitle>Đóng góp</CardTitle>
               <CardDescription>
-                Chia sẻ tài liệu học tập cho các bạn khóa sau &lt;3
+                Bạn có thể đóng góp tài liệu, hoặc ý kiến để HocVNU ngày càng
+                phát triển 💯
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <Uploader
-                  value={files}
-                  onChange={handleFileChange}
-                  disabled={uploading}
-                  dropzoneOptions={{
-                    maxSize: 1024 * 1024 * 100, // 100MB
-                  }}
-                />
-                {!turnstileToken && (
-                  <Turnstile
-                    ref={turnstileRef}
-                    siteKey={getEnv("VITE_TURNSTILE_SITE_KEY")}
-                    onSuccess={setTurnstileToken}
-                    onError={() => setTurnstileToken(null)}
-                    onExpire={() => setTurnstileToken(null)}
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <Label className="text-base font-semibold">
+                    Tài liệu / Hình ảnh
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Tải lên file tài liệu (PDF, DOCX,...) hoặc hình ảnh (PNG,
+                    JPG,...)
+                  </p>
+                  <Uploader
+                    value={files}
+                    onChange={setFiles}
+                    disabled={submitting}
+                    dropzoneOptions={{ maxSize: 1024 * 1024 * 100 }}
                   />
-                )}
-                <Button
-                  type="submit"
-                  disabled={
-                    uploading || !files || files.length === 0 || !turnstileToken
-                  }
-                >
-                  {uploading ? "Đang tải lên..." : "Tải lên"}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-base font-semibold">
+                    Góp ý / Ghi chú (không bắt buộc)
+                  </Label>
+                  <Textarea
+                    placeholder="Nhập góp ý, đề xuất, mô tả tài liệu hoặc báo lỗi..."
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    disabled={submitting}
+                    rows={4}
+                    className="resize-none"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-base font-semibold">
+                    Thông tin liên hệ (không bắt buộc)
+                  </Label>
+                  <Input
+                    placeholder="Nếu bạn muốn nhận phản hồi ^^"
+                    value={contact}
+                    onChange={(e) => setContact(e.target.value)}
+                    disabled={submitting}
+                  />
+                </div>
+
+                {files.some((f) => !f.type.startsWith("image/")) &&
+                  !turnstileToken && (
+                    <Turnstile
+                      ref={turnstileRef}
+                      siteKey={getEnv("VITE_TURNSTILE_SITE_KEY")}
+                      onSuccess={setTurnstileToken}
+                      onError={() => setTurnstileToken(null)}
+                      onExpire={() => setTurnstileToken(null)}
+                    />
+                  )}
+
+                <Button type="submit" disabled={submitting} className="w-full">
+                  {submitting ? "Đang gửi..." : "Gửi đóng góp"}
                 </Button>
+
+                {error && (
+                  <p className="text-sm text-destructive text-center">
+                    {error}
+                  </p>
+                )}
               </form>
-              {message && (
-                <p className="mt-4 text-sm text-destructive">{message}</p>
-              )}
             </CardContent>
           </Card>
         </div>
       </div>
 
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+      <Dialog open={success} onOpenChange={setSuccess}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Tải lên thành công! 🎉</DialogTitle>
+            <DialogTitle>Thành công! 🎉</DialogTitle>
             <DialogDescription>
-              Cảm ơn bạn đã đóng góp tài liệu cho cộng đồng HocVNU. Tài liệu của
-              bạn sẽ được xem xét và phê duyệt trong thời gian sớm nhất.
+              Cảm ơn bạn đã đóng góp! ♥️ Đóng góp của bạn sẽ được xem xét trong
+              thời gian sớm nhất.
             </DialogDescription>
           </DialogHeader>
-          <Button onClick={() => setShowSuccessDialog(false)}>Đóng</Button>
+          <Button onClick={() => setSuccess(false)}>Đóng</Button>
         </DialogContent>
       </Dialog>
     </>
