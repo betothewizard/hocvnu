@@ -6,11 +6,14 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from "react-router";
 import { scan } from "react-scan";
 import type { Route } from "./+types/root";
-import "./styles/app.css";
 import { CountdownBanner } from "./components/banner";
+import "./styles/app.css";
+
+const ORIGIN = "https://hocvnu.pages.dev";
 
 export const links: Route.LinksFunction = () => [
   {
@@ -37,7 +40,7 @@ export const meta: Route.MetaFunction = () => [
   {
     name: "description",
     content:
-      "HocVNU - Nền tảng học tập cho sinh viên Đại học Quốc gia Hà Nội. Tìm tài liệu, đề thi, ôn tập trắc nghiệm miễn phí.",
+      "HocVNU - Nơi sinh viên VNU cùng chia sẻ tài liệu, đề thi và kinh nghiệm học tập.",
   },
   {
     name: "author",
@@ -46,7 +49,7 @@ export const meta: Route.MetaFunction = () => [
   {
     name: "keywords",
     content:
-      "HocVNU, VNU, ĐHQGHN, Đại học Quốc gia Hà Nội, tài liệu VNU, đề thi VNU, trắc nghiệm, nhà nước và pháp luật, ôn tập đại cương, học VNU, sinh viên VNU, tài liệu học tập, chia sẻ đề thi",
+      "HocVNU, VNU, ĐHQGHN, UET, tài liệu UET, Đại học Quốc gia Hà Nội, tài liệu VNU, đề thi VNU, trắc nghiệm, nhà nước và pháp luật, ôn tập đại cương, học VNU, sinh viên VNU, tài liệu học tập, chia sẻ đề thi",
   },
   {
     name: "robots",
@@ -72,23 +75,29 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const canonicalUrl =
+    ORIGIN +
+    (location.pathname.endsWith("/")
+      ? location.pathname
+      : location.pathname + "/");
+
   useEffect(() => {
-    scan({ enabled: true });
+    if (import.meta.env.DEV) scan({ enabled: true });
   }, []);
 
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
+    "@type": "WebSite",
     name: "HocVNU",
-    url: "https://hocvnu.pages.dev",
-    logo: "https://hocvnu.pages.dev/logo.svg",
+    url: ORIGIN,
     description:
-      "Nền tảng học tập cho sinh viên Đại học Quốc gia Hà Nội. Chia sẻ tài liệu, đề thi và trắc nghiệm.",
-    sameAs: ["https://hocvnu.pages.dev"],
-    address: {
-      "@type": "PostalAddress",
-      addressCountry: "VN",
-      addressLocality: "Hà Nội",
+      "Nền tảng chia sẻ tài liệu, đề thi và kinh nghiệm học tập cho sinh viên Đại học Quốc gia Hà Nội.",
+    sameAs: [ORIGIN],
+    isAccessibleForFree: true,
+    author: {
+      "@type": "Person",
+      name: "betothewizard",
     },
   };
 
@@ -99,7 +108,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
 
-        <link rel="canonical" href="https://hocvnu.pages.dev" />
+        <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:url" content="https://hocvnu.pages.dev" />
         <meta property="og:type" content="website" />
