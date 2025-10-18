@@ -1,72 +1,72 @@
 .bprogress {
-	pointer-events: none;
-	z-index: 99999;
+  pointer-events: none;
+  z-index: 99999;
 }
 
 .bprogress .bar {
-	background: #61450f;
+  background: #61450f;
 
-	position: fixed;
-	z-index: 99999;
-	top: 0;
-	left: 0;
+  position: fixed;
+  z-index: 99999;
+  top: 0;
+  left: 0;
 
-	width: 100%;
-	height: 3px;
+  width: 100%;
+  height: 3px;
 }
 
 /* Fancy blur effect */
 .bprogress .peg {
-	display: block;
-	position: absolute;
-	right: 0px;
-	width: 100px;
-	height: 100%;
-	box-shadow:
-		0 0 10px #61450f,
-		0 0 5px #61450f;
-	opacity: 1;
+  display: block;
+  position: absolute;
+  right: 0px;
+  width: 100px;
+  height: 100%;
+  box-shadow:
+    0 0 10px #61450f,
+    0 0 5px #61450f;
+  opacity: 1;
 
-	transform: rotate(3deg) translate(0px, -4px);
+  transform: rotate(3deg) translate(0px, -4px);
 }
 
 /* Remove these to get rid of the spinner */
 .bprogress .spinner {
-	display: block;
-	position: fixed;
-	z-index: 1031;
-	top: 15px;
-	right: 15px;
+  display: block;
+  position: fixed;
+  z-index: 1031;
+  top: 15px;
+  right: 15px;
 }
 
 .bprogress .spinner-icon {
-	width: 18px;
-	height: 18px;
-	box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
 
-	border: solid 2px transparent;
-	border-top-color: #61450f;
-	border-left-color: #61450f;
-	border-radius: 50%;
+  border: solid 2px transparent;
+  border-top-color: #61450f;
+  border-left-color: #61450f;
+  border-radius: 50%;
 
-	animation: bprogress-spinner 400ms linear infinite;
+  animation: bprogress-spinner 400ms linear infinite;
 }
 
 .bprogress-custom-parent {
-	overflow: hidden;
-	position: relative;
+  overflow: hidden;
+  position: relative;
 }
 
 .bprogress-custom-parent .bprogress .spinner,
 .bprogress-custom-parent .bprogress .bar {
-	position: absolute;
+  position: absolute;
 }
 
 @keyframes bprogress-spinner {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

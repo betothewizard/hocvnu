@@ -51,7 +51,7 @@ const ERROR_MESSAGES = {
 const Uploader = React.forwardRef<HTMLInputElement, InputProps>(
   (
     { dropzoneOptions, width, height, value, className, disabled, onChange },
-    ref
+    ref,
   ) => {
     const onDrop = (acceptedFiles: File[]) => {
       if (!acceptedFiles) return;
@@ -80,9 +80,9 @@ const Uploader = React.forwardRef<HTMLInputElement, InputProps>(
           disabled && variants.disabled,
           isDragAccept && variants.accept,
           isDragReject && variants.reject,
-          className
+          className,
         ).trim(),
-      [isDragActive, isDragAccept, isDragReject, disabled, className]
+      [isDragActive, isDragAccept, isDragReject, disabled, className],
     );
 
     const errorMessage = React.useMemo(() => {
@@ -226,7 +226,7 @@ const Uploader = React.forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Uploader.displayName = "Uploader";

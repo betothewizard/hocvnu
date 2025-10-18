@@ -218,7 +218,7 @@
     background-image: url("/texture.jpg");
     background-size: 100% 100%;
     background-repeat: repeat;
-    opacity: 0.05;
+    opacity: 0.03;
     mix-blend-mode: multiply;
     z-index: 100;
     isolation: isolate;

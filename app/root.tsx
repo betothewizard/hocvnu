@@ -22,6 +22,21 @@ export const links: Route.LinksFunction = () => [
     href: "/logo.svg",
   },
   {
+    rel: "icon",
+    type: "image/png",
+    sizes: "192x192",
+    href: "/logo-192.png",
+  },
+  {
+    rel: "apple-touch-icon",
+    sizes: "180x180",
+    href: "/logo-192.png",
+  },
+  {
+    rel: "manifest",
+    href: "/manifest.json",
+  },
+  {
     rel: "preconnect",
     href: "https://fonts.googleapis.com",
   },
@@ -49,7 +64,7 @@ export const meta: Route.MetaFunction = () => [
   {
     name: "keywords",
     content:
-      "HocVNU, VNU, ĐHQGHN, UET, tài liệu UET, Đại học Quốc gia Hà Nội, tài liệu VNU, đề thi VNU, trắc nghiệm, nhà nước và pháp luật, ôn tập đại cương, học VNU, sinh viên VNU, tài liệu học tập, chia sẻ đề thi",
+      "HocVNU, VNU, ĐHQGHN, UET, tài liệu UET, Đại học Quốc gia Hà Nội, tài liệu VNU, đề thi VNU, trắc nghiệm, ôn tập đại cương, học VNU, sinh viên VNU, tài liệu học tập, chia sẻ đề thi",
   },
   {
     name: "robots",
@@ -121,10 +136,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
           property="og:description"
           content="Nền tảng học tập cho sinh viên Đại học Quốc gia Hà Nội."
         />
-        <meta property="og:image" content="https://hocvnu.pages.dev/logo.svg" />
+        <meta
+          property="og:image"
+          content="https://hocvnu.pages.dev/logo-og.png"
+        />
         <meta property="og:image:alt" content="HocVNU Logo" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/png" />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta property="twitter:domain" content="hocvnu.pages.dev" />
@@ -139,10 +158,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
         <meta
           name="twitter:image"
-          content="https://hocvnu.pages.dev/logo.svg"
+          content="https://hocvnu.pages.dev/logo-og.png"
         />
 
-        <meta name="theme-color" content="#f7b136" />
+        <meta name="theme-color" content="#ecdab9" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="HocVNU" />
