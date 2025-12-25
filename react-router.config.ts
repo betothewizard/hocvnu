@@ -6,15 +6,28 @@ export default {
   async prerender({ getStaticPaths }) {
     const urls = ["/", "/tai-lieu", "/trac-nghiem"];
 
-    const quizzes = await getQuizzesMetadata();
-    for (const quiz of quizzes) {
-      const totalPages = Math.ceil(quiz.total / 10);
+    try {
+      const quizzes = await getQuizzesMetadata();
 
-      for (let p = 0; p < totalPages; p++) {
-        urls.push(`/trac-nghiem/${quiz.code}/${p}`);
+      // Ensure quizzes is an array before iterating
+      if (Array.isArray(quizzes)) {
+        for (const quiz of quizzes) {
+          const totalPages = Math.ceil(quiz.total / 10);
+
+          for (let p = 0; p < totalPages; p++) {
+            urls.push(`/trac-nghiem/${quiz.code}/${p}`);
+          }
+
+          urls.push(`/trac-nghiem/${quiz.code}`);
+        }
+      } else {
+        console.warn(
+          "[prerender] getQuizzesMetadata did not return an array:",
+          quizzes
+        );
       }
-
-      urls.push(`/trac-nghiem/${quiz.code}`);
+    } catch (error) {
+      console.error("[prerender] Failed to fetch quizzes metadata:", error);
     }
 
     return urls;

@@ -1,14 +1,119 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "9b5be23d-9448-404a-bf70-e7a9eea51180",
+  "id": "34b0fd25-e21f-4a18-a200-22a26f4ec2b5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "documents": {
+      "name": "documents",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "subject_code": {
+          "name": "subject_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "file_url": {
+          "name": "file_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'CURRENT_TIMESTAMP'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'CURRENT_TIMESTAMP'"
+        },
+        "download_count": {
+          "name": "download_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "documents_slug_unique": {
+          "name": "documents_slug_unique",
+          "columns": [
+            "slug"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "documents_subject_code_subjects_code_fk": {
+          "name": "documents_subject_code_subjects_code_fk",
+          "tableFrom": "documents",
+          "tableTo": "subjects",
+          "columnsFrom": [
+            "subject_code"
+          ],
+          "columnsTo": [
+            "code"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "questions": {
       "name": "questions",
       "columns": {
-        "code": {
-          "name": "code",
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "subject_code": {
+          "name": "subject_code",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -24,12 +129,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "questions_code_subjects_code_fk": {
-          "name": "questions_code_subjects_code_fk",
+        "questions_subject_code_subjects_code_fk": {
+          "name": "questions_subject_code_subjects_code_fk",
           "tableFrom": "questions",
           "tableTo": "subjects",
           "columnsFrom": [
-            "code"
+            "subject_code"
           ],
           "columnsTo": [
             "code"
@@ -45,10 +150,17 @@
     "subjects": {
       "name": "subjects",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
         "code": {
           "name": "code",
           "type": "text",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -60,7 +172,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "subjects_code_unique": {
+          "name": "subjects_code_unique",
+          "columns": [
+            "code"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -69,8 +189,15 @@
     "submissions": {
       "name": "submissions",
       "columns": {
-        "code": {
-          "name": "code",
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "subject_code": {
+          "name": "subject_code",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -86,12 +213,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "submissions_code_subjects_code_fk": {
-          "name": "submissions_code_subjects_code_fk",
+        "submissions_subject_code_subjects_code_fk": {
+          "name": "submissions_subject_code_subjects_code_fk",
           "tableFrom": "submissions",
           "tableTo": "subjects",
           "columnsFrom": [
-            "code"
+            "subject_code"
           ],
           "columnsTo": [
             "code"

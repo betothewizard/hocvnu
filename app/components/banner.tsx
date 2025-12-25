@@ -11,7 +11,7 @@ const timeUnitTranslations: { [key: string]: string } = {
 
 export function CountdownBanner() {
   const calculateTimeLeft = () => {
-    const targetDate = new Date(new Date().getFullYear(), 10, 1, 0, 0, 0);
+    const targetDate = new Date(2026, 1, 1, 0, 0, 0);
     const difference = +targetDate - +new Date();
     let timeLeft = {};
 
@@ -54,7 +54,7 @@ export function CountdownBanner() {
       <span key={interval}>
         {timeLeft[interval as keyof typeof timeLeft]}{" "}
         {timeUnitTranslations[interval]}{" "}
-      </span>,
+      </span>
     );
   });
 

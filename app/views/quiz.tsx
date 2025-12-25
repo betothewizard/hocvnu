@@ -21,7 +21,7 @@ export async function loader({ params }: Route.ClientLoaderArgs) {
 
 const getQuestionsAndAnswers = (
   data: any[],
-  currentPage: number,
+  currentPage: number
 ): QuestionType[] => {
   return data.map((questionData, id: number) => ({
     id: currentPage * QUESTIONS_PER_PAGE + id,
@@ -35,7 +35,7 @@ const getQuestionsAndAnswers = (
         (content: string, index: number) => ({
           id: index + 1,
           content: content,
-        }),
+        })
       ),
     ]),
     correctAnswer: questionData.correct_answer,
@@ -60,14 +60,14 @@ export default function QuizPage({ loaderData }: Route.ComponentProps) {
   const onAnswerSelected = (questionId: number, answerIndex: number) => {
     setQuestionsAndAnswers((prevQuestions) => {
       return prevQuestions.map((q) =>
-        q.id === questionId ? { ...q, selectedAnswerIndex: answerIndex } : q,
+        q.id === questionId ? { ...q, selectedAnswerIndex: answerIndex } : q
       );
     });
   };
 
   const onCheckAnswer = async () => {
     const notAllSelected = questionsAndAnswers.some(
-      (element) => element.selectedAnswerIndex === undefined,
+      (element) => element.selectedAnswerIndex === undefined
     );
     setShowWarning(notAllSelected);
     if (!notAllSelected) {
